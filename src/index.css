@@ -2,41 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* AI Pet Avatar Service Design System
+   Combining pet-friendly warmth with futuristic AI technology
+   All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors - warm and friendly */
+    --background: 35 100% 98%;
+    --foreground: 220 20% 15%;
 
+    /* Pet-themed warm colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 20% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 20% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - warm coral/orange for pet friendliness */
+    --primary: 15 85% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 15 85% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - soft lavender for tech/AI feel */
+    --secondary: 260 50% 85%;
+    --secondary-foreground: 260 20% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Tech colors for AI sections */
+    --tech-bg: 220 25% 8%;
+    --tech-foreground: 220 15% 85%;
+    --tech-accent: 210 100% 70%;
+    --tech-glow: 210 100% 80%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Muted tones */
+    --muted: 35 30% 92%;
+    --muted-foreground: 220 15% 45%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Accent - playful pink for highlights */
+    --accent: 330 70% 75%;
+    --accent-foreground: 330 20% 20%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Status colors */
+    --success: 120 60% 50%;
+    --warning: 45 90% 60%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* UI elements */
+    --border: 35 20% 88%;
+    --input: 35 20% 92%;
+    --ring: 15 85% 60%;
+
+    /* Radius for rounded, friendly feel */
+    --radius: 1rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-tech: linear-gradient(135deg, hsl(var(--tech-bg)), hsl(220 25% 12%));
+    --gradient-hero: linear-gradient(180deg, hsl(35 100% 98%), hsl(35 50% 95%));
+    --gradient-glow: radial-gradient(circle, hsl(var(--tech-glow) / 0.3), transparent);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--primary) / 0.1);
+    --shadow-card: 0 8px 30px hsl(220 20% 15% / 0.1);
+    --shadow-glow: 0 0 40px hsl(var(--tech-glow) / 0.4);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
 
