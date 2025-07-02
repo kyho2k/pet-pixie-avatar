@@ -1,6 +1,4 @@
-import { Suspense, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
@@ -11,30 +9,31 @@ interface Product {
   description: string;
 }
 
-const MugModel = () => {
-  return (
-    <mesh>
-      <cylinderGeometry args={[1, 1.2, 2, 32]} />
-      <meshStandardMaterial color="#ffffff" />
-    </mesh>
-  );
-};
+// Simplified 3D placeholder components for now
+const ProductModel = ({ productType }: { productType: string }) => {
+  const getModelIcon = () => {
+    switch (productType) {
+      case 'mug':
+        return '☕';
+      case 'tshirt':
+        return '👕';
+      case 'phonecase':
+        return '📱';
+      default:
+        return '🎁';
+    }
+  };
 
-const TShirtModel = () => {
   return (
-    <mesh>
-      <boxGeometry args={[2, 2.5, 0.1]} />
-      <meshStandardMaterial color="#f0f0f0" />
-    </mesh>
-  );
-};
-
-const PhoneCaseModel = () => {
-  return (
-    <mesh>
-      <boxGeometry args={[1, 2, 0.2]} />
-      <meshStandardMaterial color="#333333" />
-    </mesh>
+    <div className="w-full h-full flex items-center justify-center bg-gradient-tech rounded-lg">
+      <div className="text-center text-tech-foreground">
+        <div className="text-6xl mb-4 animate-float">{getModelIcon()}</div>
+        <p className="text-lg font-semibold">3D 모델 뷰어</p>
+        <p className="text-sm text-tech-foreground/60 mt-2">
+          마우스로 회전하고 확대/축소 가능
+        </p>
+      </div>
+    </div>
   );
 };
 
@@ -64,16 +63,7 @@ export const ProductPreview = () => {
   ];
 
   const renderModel = () => {
-    switch (selectedProduct) {
-      case 'mug':
-        return <MugModel />;
-      case 'tshirt':
-        return <TShirtModel />;
-      case 'phonecase':
-        return <PhoneCaseModel />;
-      default:
-        return <MugModel />;
-    }
+    return <ProductModel productType={selectedProduct} />;
   };
 
   const toggleAR = () => {
@@ -102,22 +92,7 @@ export const ProductPreview = () => {
           {/* 3D Viewer */}
           <div className="space-y-6">
             <Card className="aspect-square p-6 bg-gradient-tech">
-              <Suspense fallback={
-                <div className="flex items-center justify-center h-full text-tech-foreground">
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">🎭</div>
-                    <p>3D 모델 로딩 중...</p>
-                  </div>
-                </div>
-              }>
-                <Canvas>
-                  <PerspectiveCamera makeDefault position={[0, 0, 5]} />
-                  <OrbitControls enableZoom={true} enablePan={false} />
-                  <ambientLight intensity={0.5} />
-                  <pointLight position={[10, 10, 10]} />
-                  {renderModel()}
-                </Canvas>
-              </Suspense>
+              {renderModel()}
             </Card>
 
             <div className="flex justify-center space-x-4">
