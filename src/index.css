@@ -9,39 +9,39 @@
 
 @layer base {
   :root {
-    /* Base colors - warm and friendly */
-    --background: 35 100% 98%;
-    --foreground: 220 20% 15%;
+    /* Pastel Pet Avatar Design System - 20-30대 여성 취향 */
+    --background: 25 50% 98%;
+    --foreground: 220 15% 20%;
 
-    /* Pet-themed warm colors */
+    /* Pet-themed pastel colors */
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 15%;
+    --card-foreground: 220 15% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 15%;
+    --popover-foreground: 220 15% 20%;
 
-    /* Primary - warm coral/orange for pet friendliness */
-    --primary: 15 85% 60%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 15 85% 70%;
+    /* Primary - Peach pastel for main brand */
+    --primary: 15 70% 85%;
+    --primary-foreground: 15 30% 25%;
+    --primary-glow: 15 80% 90%;
 
-    /* Secondary - soft lavender for tech/AI feel */
-    --secondary: 260 50% 85%;
-    --secondary-foreground: 260 20% 20%;
+    /* Secondary - Mint pastel for support */
+    --secondary: 150 50% 90%;
+    --secondary-foreground: 150 30% 25%;
 
     /* Tech colors for AI sections */
     --tech-bg: 220 25% 8%;
     --tech-foreground: 220 15% 85%;
-    --tech-accent: 210 100% 70%;
-    --tech-glow: 210 100% 80%;
+    --tech-accent: 200 60% 80%;
+    --tech-glow: 200 70% 85%;
 
-    /* Muted tones */
-    --muted: 35 30% 92%;
-    --muted-foreground: 220 15% 45%;
+    /* Muted pastel tones */
+    --muted: 25 25% 95%;
+    --muted-foreground: 220 10% 50%;
 
-    /* Accent - playful pink for highlights */
-    --accent: 330 70% 75%;
-    --accent-foreground: 330 20% 20%;
+    /* Accent - Coral pastel for highlights */
+    --accent: 5 70% 85%;
+    --accent-foreground: 5 40% 25%;
 
     /* Status colors */
     --success: 120 60% 50%;
