@@ -5,6 +5,8 @@ import { Progress } from '@/components/ui/progress';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { RegenerateButton } from '@/components/RegenerateButton';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useGenerateAvatar, useJobStatus } from '@/hooks/useReplicateAPI';
+import { useJobProgress } from '@/hooks/useWebSocket';
 import { toast } from 'sonner';
 import samplePetsImage from '@/assets/sample-pets.jpg';
 
@@ -17,13 +19,24 @@ interface SamplePet {
 
 export const DemoSection = () => {
   const [selectedPet, setSelectedPet] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(60);
-  const [generationStatus, setGenerationStatus] = useState<'starting' | 'processing' | 'succeeded' | 'failed'>('starting');
-  const [currentStep, setCurrentStep] = useState<string>('');
   const [remainingCredits, setRemainingCredits] = useState(3);
-  const [showResults, setShowResults] = useState(false);
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
+  
+  // API hooks
+  const generateMutation = useGenerateAvatar();
+  const { data: jobStatus } = useJobStatus(currentJobId, !!currentJobId);
+  
+  // WebSocket progress hook
+  const { 
+    progress, 
+    status: generationStatus, 
+    currentStep, 
+    timeRemaining,
+    isConnected 
+  } = useJobProgress(currentJobId);
+  
+  const isGenerating = isConnected || generateMutation.isPending;
+  const showResults = generationStatus === 'succeeded';
 
   const samplePets: SamplePet[] = [
     { id: '1', name: '골든리트리버', type: '강아지', image: samplePetsImage },
@@ -32,66 +45,44 @@ export const DemoSection = () => {
     { id: '4', name: '스코티시폴드', type: '고양이', image: samplePetsImage },
   ];
 
-  const startDemo = (petId: string) => {
+  const startDemo = async (petId: string) => {
     if (remainingCredits <= 0) {
       toast.error('오늘의 체험 한도를 모두 사용했습니다! 내일 다시 시도해주세요.');
       return;
     }
 
     setSelectedPet(petId);
-    setIsGenerating(true);
-    setProgress(0);
-    setTimeRemaining(60);
-    setGenerationStatus('starting');
-    setCurrentStep('이미지 분석 시작...');
-    setShowResults(false);
-
-    // 실제 API 호출 시뮬레이션 - 단계별 진행
-    const steps = [
-      { progress: 15, step: '펫 얼굴 인식 중...', delay: 800 },
-      { progress: 35, step: 'AI 스타일 분석 중...', delay: 1200 },
-      { progress: 55, step: '판타지 아바타 생성 중...', delay: 1500 },
-      { progress: 75, step: '고품질 렌더링 중...', delay: 1000 },
-      { progress: 95, step: '최종 보정 중...', delay: 700 },
-      { progress: 100, step: '완성!', delay: 500 }
-    ];
     
-    setGenerationStatus('processing');
-    
-    let currentStepIndex = 0;
-    const processStep = () => {
-      if (currentStepIndex < steps.length) {
-        const step = steps[currentStepIndex];
+    try {
+      // Generate avatar using API
+      const result = await generateMutation.mutateAsync({
+        imageUrl: samplePetsImage,
+        prompt: `Fantasy avatar of a ${samplePets.find(p => p.id === petId)?.name} in magical style`,
+        num_outputs: 3
+      });
+      
+      // Set job ID to start progress tracking
+      setCurrentJobId(result.jobId);
+      setRemainingCredits(prev => Math.max(0, prev - 1));
+      
+      // Navigate to results after completion
+      if (result.status === 'succeeded') {
         setTimeout(() => {
-          setProgress(step.progress);
-          setCurrentStep(step.step);
-          setTimeRemaining(prev => Math.max(0, prev - Math.ceil(step.delay / 1000)));
-          
-          if (step.progress === 100) {
-            setGenerationStatus('succeeded');
-            setIsGenerating(false);
-            setShowResults(true);
-            setRemainingCredits(prev => Math.max(0, prev - 1));
-            toast.success('아바타 생성이 완료되었습니다! 🎉');
-            
-            // Navigate to results section
-            setTimeout(() => {
-              document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
-            }, 1000);
-          }
-          
-          currentStepIndex++;
-          processStep();
-        }, step.delay);
+          document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+        }, 1000);
       }
-    };
-    
-    processStep();
+      
+    } catch (error) {
+      toast.error('아바타 생성에 실패했습니다. 다시 시도해주세요.');
+      console.error('Generation error:', error);
+    }
   };
 
   const handleRegenerate = async () => {
     if (selectedPet) {
-      startDemo(selectedPet);
+      // Reset current job
+      setCurrentJobId(null);
+      await startDemo(selectedPet);
     }
   };
 

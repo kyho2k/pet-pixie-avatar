@@ -3,6 +3,9 @@ import { HeroSection } from '@/components/HeroSection';
 import { DemoSection } from '@/components/DemoSection';
 import { ResultsSection } from '@/components/ResultsSection';
 import { ProductPreview } from '@/components/ProductPreview';
+import { ProductPreview3D } from '@/components/ProductPreview3D';
+import { ServiceMetrics } from '@/components/ServiceMetrics';
+import { CrowdfundingWidget } from '@/components/CrowdfundingWidget';
 import { FundingSection } from '@/components/FundingSection';
 
 const Index = () => {
@@ -11,9 +14,12 @@ const Index = () => {
       <Navigation />
       <main>
         <HeroSection />
+        <ServiceMetrics />
         <DemoSection />
         <ResultsSection />
         <ProductPreview />
+        <ProductPreview3D />
+        <CrowdfundingWidget />
         <FundingSection />
       </main>
       
