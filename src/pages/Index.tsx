@@ -7,12 +7,14 @@ import { ProductPreview3D } from '@/components/ProductPreview3D';
 import { ServiceMetrics } from '@/components/ServiceMetrics';
 import { CrowdfundingWidget } from '@/components/CrowdfundingWidget';
 import { FundingSection } from '@/components/FundingSection';
+import { SkipLink } from '@/components/SkipLink';
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <SkipLink />
       <Navigation />
-      <main>
+      <main role="main" tabIndex={-1}>
         <HeroSection />
         <ServiceMetrics />
         <DemoSection />
