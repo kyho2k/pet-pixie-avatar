@@ -5,6 +5,8 @@ import { Progress } from '@/components/ui/progress';
 import { ProgressBar } from '@/components/ui/progress-bar';
 import { RegenerateButton } from '@/components/RegenerateButton';
 import { ImageUpload } from '@/components/ImageUpload';
+import { StyleSelector } from '@/components/StyleSelector';
+import { EnhancedProgressBar } from '@/components/EnhancedProgressBar';
 import { ImageGenerationSkeleton } from '@/components/LoadingSkeletons';
 import { useGenerateAvatar, useJobStatus } from '@/hooks/useReplicateAPI';
 import { useJobProgress } from '@/hooks/useWebSocket';
@@ -24,6 +26,7 @@ export const DemoSection = () => {
   const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string>('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [selectedStyles, setSelectedStyles] = useState<string[]>(['disney']);
   
   // API hooks
   const generateMutation = useGenerateAvatar();
@@ -165,6 +168,12 @@ export const DemoSection = () => {
                 className="mb-6"
               />
               
+              <StyleSelector
+                onStylesChange={setSelectedStyles}
+                selectedStyles={selectedStyles}
+                className="mb-6"
+              />
+              
               {uploadedImage && (
                 <div className="text-center">
                   <Button
@@ -226,45 +235,12 @@ export const DemoSection = () => {
           </div>
         ) : (
           <div className="max-w-2xl mx-auto">
-            <ImageGenerationSkeleton />
-            
-            <Card className="p-8 bg-tech-bg/50 border-tech-accent/20 animate-scale-in mt-6">
-              <div className="text-center space-y-6">
-                <div className="w-24 h-24 mx-auto bg-gradient-primary rounded-full flex items-center justify-center animate-pulse-glow">
-                  <span className="text-2xl" role="img" aria-label="AI 생성 중">🎨</span>
-                </div>
-                
-                <div>
-                  <h3 className="text-2xl font-bold text-tech-foreground mb-2">
-                    AI가 열심히 그림 그리는 중...
-                  </h3>
-                  <p className="text-tech-foreground/80">
-                    약 {timeRemaining}초 남음 • {Math.round(progress)}% 완료
-                  </p>
-                </div>
-
-                <div role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label={`AI 생성 진행률: ${Math.round(progress)}%`}>
-                  <ProgressBar
-                    progress={progress}
-                    status={generationStatus}
-                    currentStep={currentStep}
-                    className="text-tech-foreground"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-3 gap-4 text-sm text-tech-foreground/60" role="status" aria-live="polite">
-                  <div className={progress > 20 ? 'text-tech-accent' : ''}>
-                    📸 이미지 분석중
-                  </div>
-                  <div className={progress > 60 ? 'text-tech-accent' : ''}>
-                    🎭 스타일 적용중
-                  </div>
-                  <div className={progress > 90 ? 'text-tech-accent' : ''}>
-                    ✨ 마법 완성중
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <EnhancedProgressBar
+              progress={progress}
+              currentStep={currentStep}
+              timeRemaining={timeRemaining}
+              className="animate-scale-in"
+            />
           </div>
         )}
 

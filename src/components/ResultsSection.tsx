@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { MasonryGallery } from '@/components/MasonryGallery';
-import { BeforeAfterSlider } from '@/components/BeforeAfterSlider';
+import { ModelViewer3D } from '@/components/ModelViewer3D';
+import { RewardPreview } from '@/components/RewardPreview';
 import resultGalleryImage from '@/assets/result-gallery.jpg';
-import heroBeforeAfterImage from '@/assets/hero-before-after.jpg';
 
 interface ResultImage {
   id: string;
@@ -114,19 +114,25 @@ export const ResultsSection = () => {
           </p>
         </div>
 
-        {/* Before/After Comparison */}
-        <div className="mt-20">
+        {/* Before/After Comparison - REMOVED per PRD */}
+        {/* 기존 Before/After 슬라이더는 PRD에 따라 제거되었습니다 */}
+        
+        {/* 3D Model Viewer & Reward Preview */}
+        <div className="mt-20 space-y-12">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold mb-2">변화 과정을 직접 확인해보세요</h3>
-            <p className="text-muted-foreground">슬라이더를 좌우로 움직여 Before & After를 비교해보세요</p>
+            <h3 className="text-2xl font-bold mb-2">3D 모델 & 굿즈 미리보기</h3>
+            <p className="text-muted-foreground">
+              AI가 생성한 3D 모델을 확인하고, 다양한 굿즈 옵션을 미리 체험해보세요
+            </p>
           </div>
           
-          <div className="max-w-4xl mx-auto animate-scale-in">
-            <BeforeAfterSlider
-              beforeImage={heroBeforeAfterImage}
-              afterImage={resultGalleryImage}
-              beforeLabel="원본 펫 사진"
-              afterLabel="AI 마법사 아바타"
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <ModelViewer3D 
+              modelUrl="/demo-pet-model.glb"
+              isLoading={false}
+            />
+            <RewardPreview 
+              selectedImage={resultGalleryImage}
             />
           </div>
         </div>
