@@ -1,25 +1,15 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { ProgressBar } from '@/components/ui/progress-bar';
-import { RegenerateButton } from '@/components/RegenerateButton';
-import { ImageUpload } from '@/components/ImageUpload';
-import { StyleSelector } from '@/components/StyleSelector';
-import { EnhancedProgressBar } from '@/components/EnhancedProgressBar';
-import { ImageGenerationSkeleton } from '@/components/LoadingSkeletons';
+import { CustomImageSection } from './DemoSection/CustomImageSection';
+import { SamplePetsGrid } from './DemoSection/SamplePetsGrid';
+import { GenerationProgress } from './DemoSection/GenerationProgress';
+import { GenerationControls } from './DemoSection/GenerationControls';
 import { useGenerateAvatar, useJobStatus } from '@/hooks/useReplicateAPI';
 import { useJobProgress } from '@/hooks/useWebSocket';
 import { useUserQuota } from '@/hooks/useUserQuota';
 import { toast } from 'sonner';
 import samplePetsImage from '@/assets/sample-pets.jpg';
 
-interface SamplePet {
-  id: string;
-  name: string;
-  type: string;
-  image: string;
-}
 
 export const DemoSection = () => {
   const [selectedPet, setSelectedPet] = useState<string | null>(null);
@@ -45,11 +35,11 @@ export const DemoSection = () => {
   const isGenerating = isConnected || generateMutation.isPending;
   const showResults = generationStatus === 'succeeded';
 
-  const samplePets: SamplePet[] = [
-    { id: '1', name: '골든리트리버', type: '강아지', image: samplePetsImage },
-    { id: '2', name: '터키시앙고라', type: '고양이', image: samplePetsImage },
-    { id: '3', name: '시베리안허스키', type: '강아지', image: samplePetsImage },
-    { id: '4', name: '스코티시폴드', type: '고양이', image: samplePetsImage },
+  const samplePets = [
+    { id: '1', name: '골든리트리버', type: '강아지' },
+    { id: '2', name: '터키시앙고라', type: '고양이' },
+    { id: '3', name: '시베리안허스키', type: '강아지' },
+    { id: '4', name: '스코티시폴드', type: '고양이' },
   ];
 
   const handleImageSelect = (file: File, imageUrl: string) => {
@@ -151,42 +141,14 @@ export const DemoSection = () => {
         {!isGenerating ? (
           <div className="space-y-12">
             {/* Custom Image Upload Section */}
-            <div className="max-w-2xl mx-auto">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-tech-foreground mb-2">
-                  🐾 내 반려동물로 체험하기
-                </h3>
-                <p className="text-tech-foreground/70">
-                  직접 반려동물 사진을 업로드해서 AI 아바타를 만들어보세요
-                </p>
-              </div>
-              
-              <ImageUpload
-                onImageSelect={handleImageSelect}
-                selectedImage={uploadedImage}
-                isGenerating={isGenerating}
-                className="mb-6"
-              />
-              
-              <StyleSelector
-                onStylesChange={setSelectedStyles}
-                selectedStyles={selectedStyles}
-                className="mb-6"
-              />
-              
-              {uploadedImage && (
-                <div className="text-center">
-                  <Button
-                    onClick={startCustomGeneration}
-                    disabled={isGenerating}
-                    className="bg-gradient-primary hover:bg-gradient-primary/90 text-white px-8 py-3 text-lg"
-                    size="lg"
-                  >
-                    🎨 AI 아바타 생성하기
-                  </Button>
-                </div>
-              )}
-            </div>
+            <CustomImageSection
+              uploadedImage={uploadedImage}
+              selectedStyles={selectedStyles}
+              isGenerating={isGenerating}
+              onImageSelect={handleImageSelect}
+              onStylesChange={setSelectedStyles}
+              onGenerate={startCustomGeneration}
+            />
 
             {/* Divider */}
             <div className="flex items-center max-w-4xl mx-auto">
@@ -196,68 +158,23 @@ export const DemoSection = () => {
             </div>
 
             {/* Sample Pets Section */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              {samplePets.map((pet, index) => (
-                <Card 
-                  key={pet.id}
-                  className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-glow bg-tech-bg/50 border-tech-accent/20 animate-scale-in"
-                  style={{animationDelay: `${index * 0.1}s`}}
-                  onClick={() => startDemo(pet.id)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`${pet.name} 샘플로 체험하기`}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      startDemo(pet.id);
-                    }
-                  }}
-                >
-                  <div className="p-4">
-                    <div className="aspect-square rounded-lg overflow-hidden mb-4 relative">
-                      <img 
-                        src={pet.image} 
-                        alt={pet.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-primary/0 group-hover:bg-gradient-primary/20 transition-all duration-300 flex items-center justify-center">
-                        <span className="opacity-0 group-hover:opacity-100 text-white font-semibold text-lg transition-opacity duration-300">
-                          체험하기 ✨
-                        </span>
-                      </div>
-                    </div>
-                    <h3 className="font-semibold text-tech-foreground">{pet.name}</h3>
-                    <p className="text-tech-foreground/60 text-sm">{pet.type}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <SamplePetsGrid onPetSelect={startDemo} />
           </div>
         ) : (
-          <div className="max-w-2xl mx-auto">
-            <EnhancedProgressBar
-              progress={progress}
-              currentStep={currentStep}
-              timeRemaining={timeRemaining}
-              className="animate-scale-in"
-            />
-          </div>
+          <GenerationProgress
+            progress={progress}
+            currentStep={currentStep}
+            timeRemaining={timeRemaining}
+          />
         )}
 
         {/* Credit Warning & Regenerate Button */}
         {showResults && (
-          <div className="text-center mt-8 space-y-4">
-            <div className="inline-flex items-center space-x-4">
-              <RegenerateButton
-                onRegenerate={handleRegenerate}
-                remainingCredits={quota.daily.remaining}
-                disabled={isGenerating}
-              />
-              <div className="text-tech-foreground/60 text-sm">
-                남은 체험 횟수: <span className="font-bold text-tech-accent">{quota.daily.remaining}회</span>
-              </div>
-            </div>
-          </div>
+          <GenerationControls
+            onRegenerate={handleRegenerate}
+            remainingCredits={quota.daily.remaining}
+            disabled={isGenerating}
+          />
         )}
 
         <div className="text-center mt-12">
