@@ -3,22 +3,25 @@ import { toast } from 'sonner';
 
 interface GenerateRequest {
   imageUrl: string;
-  prompt: string;
-  num_outputs?: number;
+  styles: string[];
 }
 
 interface GenerateResponse {
   jobId: string;
-  status: 'starting' | 'processing' | 'succeeded' | 'failed';
+  status: 'starting' | 'meshy_processing' | 'render_processing' | 'cartoon_processing' | 'succeeded' | 'failed';
+  phase: 'meshy' | 'render' | 'cartoon' | 'completed';
   progress?: number;
+  meshyModel?: string; // GLB URL
   output?: string[];
   error?: string;
 }
 
 interface JobStatus {
   id: string;
-  status: 'starting' | 'processing' | 'succeeded' | 'failed';
+  status: 'starting' | 'meshy_processing' | 'render_processing' | 'cartoon_processing' | 'succeeded' | 'failed';
+  phase: 'meshy' | 'render' | 'cartoon' | 'completed';
   progress: number;
+  meshyModel?: string;
   output?: string[];
   error?: string;
   created_at: string;
@@ -33,6 +36,7 @@ const simulateGenerate = async (request: GenerateRequest): Promise<GenerateRespo
   return {
     jobId: `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     status: 'starting',
+    phase: 'meshy',
     progress: 0
   };
 };
@@ -42,40 +46,48 @@ const simulateJobStatus = async (jobId: string): Promise<JobStatus> => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
-  // Mock progressive status based on job age
+  // Mock progressive status based on job age - 2-phase pipeline
   const createdTime = parseInt(jobId.split('_')[1]);
   const elapsed = Date.now() - createdTime;
   
   let status: JobStatus['status'] = 'starting';
+  let phase: JobStatus['phase'] = 'meshy';
   let progress = 0;
+  let meshyModel: string | undefined;
   let output: string[] | undefined;
   
-  if (elapsed > 60000) { // 1 minute - completed
+  if (elapsed > 90000) { // 90s - completed
     status = 'succeeded';
+    phase = 'completed';
     progress = 100;
+    meshyModel = '/api/placeholder/3d-model.glb';
     output = [
-      '/api/placeholder/400/400',
-      '/api/placeholder/400/450', 
-      '/api/placeholder/400/380'
+      '/api/placeholder/400/400?style=disney',
+      '/api/placeholder/400/450?style=anime', 
+      '/api/placeholder/400/380?style=fantasy'
     ];
-  } else if (elapsed > 45000) { // 45s - final rendering
-    status = 'processing';
-    progress = 90 + Math.floor((elapsed - 45000) / 1500);
-  } else if (elapsed > 30000) { // 30s - style application
-    status = 'processing';
-    progress = 70 + Math.floor((elapsed - 30000) / 750);
-  } else if (elapsed > 15000) { // 15s - analysis
-    status = 'processing';
-    progress = 30 + Math.floor((elapsed - 15000) / 375);
-  } else if (elapsed > 5000) { // 5s - starting
-    status = 'processing';
-    progress = 10 + Math.floor((elapsed - 5000) / 500);
+  } else if (elapsed > 60000) { // 60-90s - cartoon processing
+    status = 'cartoon_processing';
+    phase = 'cartoon';
+    progress = 70 + Math.floor((elapsed - 60000) / 1000);
+    meshyModel = '/api/placeholder/3d-model.glb';
+  } else if (elapsed > 50000) { // 50-60s - render processing
+    status = 'render_processing';
+    phase = 'render';
+    progress = 60 + Math.floor((elapsed - 50000) / 1000);
+    meshyModel = '/api/placeholder/3d-model.glb';
+  } else if (elapsed > 5000) { // 5-50s - meshy processing
+    status = 'meshy_processing';
+    phase = 'meshy';
+    progress = 10 + Math.floor((elapsed - 5000) / 1125); // 45s for meshy
   }
   
   return {
     id: jobId,
     status,
+    phase,
     progress: Math.min(progress, 100),
+    meshyModel,
     output,
     created_at: new Date(createdTime).toISOString(),
     completed_at: status === 'succeeded' ? new Date().toISOString() : undefined

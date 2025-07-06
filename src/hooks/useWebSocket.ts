@@ -4,16 +4,20 @@ import { toast } from 'sonner';
 interface SocketProgress {
   jobId: string;
   progress: number;
-  status: 'starting' | 'processing' | 'succeeded' | 'failed';
+  status: 'starting' | 'meshy_processing' | 'render_processing' | 'cartoon_processing' | 'succeeded' | 'failed';
+  phase: 'meshy' | 'render' | 'cartoon' | 'completed';
   currentStep?: string;
   timeRemaining?: number;
+  meshyModel?: string;
 }
 
 export const useJobProgress = (jobId: string | null) => {
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState<'starting' | 'processing' | 'succeeded' | 'failed'>('starting');
+  const [status, setStatus] = useState<'starting' | 'meshy_processing' | 'render_processing' | 'cartoon_processing' | 'succeeded' | 'failed'>('starting');
+  const [phase, setPhase] = useState<'meshy' | 'render' | 'cartoon' | 'completed'>('meshy');
   const [currentStep, setCurrentStep] = useState<string>('');
-  const [timeRemaining, setTimeRemaining] = useState<number>(60);
+  const [timeRemaining, setTimeRemaining] = useState<number>(90);
+  const [meshyModel, setMeshyModel] = useState<string>('');
   const [isConnected, setIsConnected] = useState(false);
   
   // Simulate WebSocket connection for demo
@@ -28,16 +32,23 @@ export const useJobProgress = (jobId: string | null) => {
     startTimeRef.current = Date.now();
     setProgress(0);
     setStatus('starting');
-    setCurrentStep('AI가 이미지를 분석하고 있어요...');
-    setTimeRemaining(60);
+    setPhase('meshy');
+    setCurrentStep('AI가 3D 모델을 생성하고 있어요...');
+    setTimeRemaining(90);
+    setMeshyModel('');
     setIsConnected(true);
 
-    const steps = [
-      { minProgress: 0, maxProgress: 20, step: '펫 얼굴 인식 중...', duration: 8000 },
-      { minProgress: 20, maxProgress: 40, step: 'AI 스타일 분석 중...', duration: 12000 },
-      { minProgress: 40, maxProgress: 70, step: '판타지 아바타 생성 중...', duration: 20000 },
-      { minProgress: 70, maxProgress: 90, step: '고품질 렌더링 중...', duration: 15000 },
-      { minProgress: 90, maxProgress: 100, step: '최종 보정 중...', duration: 5000 }
+    // Updated 3-phase pipeline steps
+    const steps: Array<{
+      minProgress: number;
+      maxProgress: number;
+      step: string;
+      duration: number;
+      phase: 'meshy' | 'render' | 'cartoon';
+    }> = [
+      { minProgress: 0, maxProgress: 50, step: '3D 모델 생성 중... (Meshy AI)', duration: 50000, phase: 'meshy' },
+      { minProgress: 50, maxProgress: 60, step: '다중 각도 렌더링 중...', duration: 10000, phase: 'render' },
+      { minProgress: 60, maxProgress: 100, step: '캐릭터 스타일 적용 중... (LightX AI)', duration: 30000, phase: 'cartoon' }
     ];
 
     let currentStepIndex = 0;
@@ -47,27 +58,36 @@ export const useJobProgress = (jobId: string | null) => {
       if (!startTimeRef.current) return;
 
       const elapsed = Date.now() - startTimeRef.current;
-      const totalDuration = 60000; // 60 seconds total
+      const totalDuration = 90000; // 90 seconds total
       
       // Calculate overall progress
       const overallProgress = Math.min((elapsed / totalDuration) * 100, 100);
       
-      // Update current step based on progress
-      const currentStep = steps[currentStepIndex];
-      if (overallProgress >= currentStep.maxProgress && currentStepIndex < steps.length - 1) {
-        currentStepIndex++;
-        currentStepStartTime = Date.now();
-      }
+      // Update current step and phase based on progress
+      const currentStep = steps.find(step => 
+        overallProgress >= step.minProgress && overallProgress < step.maxProgress
+      ) || steps[steps.length - 1];
       
       setProgress(overallProgress);
-      setCurrentStep(steps[currentStepIndex].step);
+      setCurrentStep(currentStep.step);
+      setPhase(currentStep.phase);
       setTimeRemaining(Math.max(0, Math.ceil((totalDuration - elapsed) / 1000)));
 
-      if (overallProgress < 100) {
-        setStatus('processing');
+      // Update status based on phase
+      if (overallProgress < 50) {
+        setStatus('meshy_processing');
+      } else if (overallProgress < 60) {
+        setStatus('render_processing');
+        // 3D model becomes available
+        if (!meshyModel) {
+          setMeshyModel('/api/placeholder/3d-model.glb');
+        }
+      } else if (overallProgress < 100) {
+        setStatus('cartoon_processing');
       } else {
         setStatus('succeeded');
-        setCurrentStep('완성!');
+        setPhase('completed');
+        setCurrentStep('완성! 🎉');
         setIsConnected(false);
         
         if (intervalRef.current) {
@@ -75,18 +95,18 @@ export const useJobProgress = (jobId: string | null) => {
           intervalRef.current = null;
         }
         
-        toast.success('아바타 생성이 완료되었습니다! 🎉');
+        toast.success('3D 모델과 캐릭터가 생성되었습니다! 🎉');
       }
     }, 200); // Update every 200ms for smooth animation
 
-    // Cleanup after 65 seconds (buffer time)
+    // Cleanup after 95 seconds (buffer time)
     setTimeout(() => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
       setIsConnected(false);
-    }, 65000);
+    }, 95000);
 
   }, []);
 
@@ -122,8 +142,10 @@ export const useJobProgress = (jobId: string | null) => {
   return {
     progress,
     status,
+    phase,
     currentStep,
     timeRemaining,
+    meshyModel,
     isConnected
   };
 };

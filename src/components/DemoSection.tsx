@@ -27,8 +27,10 @@ export const DemoSection = () => {
   const { 
     progress, 
     status: generationStatus, 
+    phase,
     currentStep, 
     timeRemaining,
+    meshyModel,
     isConnected 
   } = useJobProgress(currentJobId);
   
@@ -58,8 +60,7 @@ export const DemoSection = () => {
       // Generate avatar using API
       const result = await generateMutation.mutateAsync({
         imageUrl: samplePetsImage,
-        prompt: `Fantasy avatar of a ${samplePets.find(p => p.id === petId)?.name} in magical style`,
-        num_outputs: 3
+        styles: selectedStyles
       });
       
       // Set job ID to start progress tracking
@@ -93,8 +94,7 @@ export const DemoSection = () => {
       // Generate avatar using uploaded image
       const result = await generateMutation.mutateAsync({
         imageUrl: uploadedImage,
-        prompt: 'Fantasy avatar transformation of this pet',
-        num_outputs: 3
+        styles: selectedStyles
       });
       
       setCurrentJobId(result.jobId);
@@ -165,6 +165,8 @@ export const DemoSection = () => {
             progress={progress}
             currentStep={currentStep}
             timeRemaining={timeRemaining}
+            phase={phase}
+            meshyModel={meshyModel}
           />
         )}
 
@@ -179,7 +181,7 @@ export const DemoSection = () => {
 
         <div className="text-center mt-12">
           <p className="text-tech-foreground/60 text-sm">
-            💡 실제 서비스에서는 고해상도 이미지 4-8장을 생성해드립니다
+            💡 실제 서비스: 3D 모델 → 다중 스타일 캐릭터 (디즈니, 애니메이션 등) 생성
           </p>
         </div>
       </div>
