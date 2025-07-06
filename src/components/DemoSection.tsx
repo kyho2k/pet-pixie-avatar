@@ -31,6 +31,7 @@ export const DemoSection = () => {
     currentStep, 
     timeRemaining,
     meshyModel,
+    cartoonResults,
     isConnected 
   } = useJobProgress(currentJobId);
   

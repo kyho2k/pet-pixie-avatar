@@ -5,7 +5,7 @@ interface GenerationProgressProps {
   progress: number;
   currentStep: string;
   timeRemaining: number;
-  phase: 'meshy' | 'render' | 'cartoon' | 'completed';
+  phase: 'meshy' | 'lightx' | 'completed';
   meshyModel?: string;
 }
 
@@ -26,29 +26,23 @@ export const GenerationProgress = ({
       />
       
       {/* Phase Indicators */}
-      <div className="flex justify-center items-center space-x-8">
+      <div className="flex justify-center items-center space-x-12">
         <div className={`flex flex-col items-center p-4 rounded-lg transition-all ${
           phase === 'meshy' ? 'bg-tech-accent/20 text-tech-accent' : 
           progress > 50 ? 'bg-green-500/20 text-green-400' : 'bg-tech-bg/50 text-tech-foreground/50'
         }`}>
           <div className="text-2xl mb-2">🎲</div>
           <span className="text-sm font-medium">3D 모델링</span>
+          <span className="text-xs text-tech-foreground/50 mt-1">Meshy AI</span>
         </div>
         
         <div className={`flex flex-col items-center p-4 rounded-lg transition-all ${
-          phase === 'render' ? 'bg-tech-accent/20 text-tech-accent' : 
-          progress > 60 ? 'bg-green-500/20 text-green-400' : 'bg-tech-bg/50 text-tech-foreground/50'
-        }`}>
-          <div className="text-2xl mb-2">📷</div>
-          <span className="text-sm font-medium">렌더링</span>
-        </div>
-        
-        <div className={`flex flex-col items-center p-4 rounded-lg transition-all ${
-          phase === 'cartoon' ? 'bg-tech-accent/20 text-tech-accent' : 
-          progress >= 100 ? 'bg-green-500/20 text-green-400' : 'bg-tech-bg/50 text-tech-foreground/50'
+          phase === 'lightx' ? 'bg-tech-accent/20 text-tech-accent' : 
+          phase === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-tech-bg/50 text-tech-foreground/50'
         }`}>
           <div className="text-2xl mb-2">✨</div>
           <span className="text-sm font-medium">캐릭터화</span>
+          <span className="text-xs text-tech-foreground/50 mt-1">LightX AI</span>
         </div>
       </div>
 

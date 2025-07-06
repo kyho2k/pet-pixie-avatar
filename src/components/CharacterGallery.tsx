@@ -4,44 +4,46 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
+interface CharacterResult {
+  style: string;
+  imageUrl: string;
+  thumbnail: string;
+}
+
 interface CharacterGalleryProps {
-  characters: string[];
-  styles: string[];
+  characters: CharacterResult[];
   className?: string;
 }
 
 export const CharacterGallery = ({ 
-  characters = [], 
-  styles = [],
+  characters = [],
   className = "" 
 }: CharacterGalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const getStyleName = (index: number) => {
+  const getStyleName = (style: string) => {
     const styleNames = {
       'disney': '디즈니',
       'anime': '애니메이션', 
-      'fantasy': '판타지',
+      'pixar': '픽사',
       'cyberpunk': '사이버펑크',
       'watercolor': '수채화',
       'pixel': '픽셀아트'
     };
     
-    const style = styles[index] || 'disney';
     return styleNames[style as keyof typeof styleNames] || style;
   };
 
-  const getStyleEmoji = (index: number) => {
+  const getStyleEmoji = (style: string) => {
     const styleEmojis = {
       'disney': '🏰',
       'anime': '⚡', 
-      'fantasy': '✨',
+      'pixar': '🎬',
       'cyberpunk': '🤖',
       'watercolor': '🎨',
       'pixel': '🎮'
     };
     
-    const style = styles[index] || 'disney';
     return styleEmojis[style as keyof typeof styleEmojis] || '🎭';
   };
 
@@ -88,21 +90,21 @@ export const CharacterGallery = ({
 
       {/* Character Grid */}
       <div className="grid md:grid-cols-3 gap-6">
-        {characters.map((imageUrl, index) => (
+        {characters.map((character, index) => (
           <Card 
             key={index}
             className="bg-tech-bg/50 border-tech-accent/20 overflow-hidden hover:border-tech-accent/40 transition-all cursor-pointer group"
-            onClick={() => setSelectedImage(imageUrl)}
+            onClick={() => setSelectedImage(character.imageUrl)}
           >
             <div className="aspect-square relative overflow-hidden">
               <img
-                src={imageUrl}
-                alt={`${getStyleName(index)} 스타일 캐릭터`}
+                src={character.imageUrl}
+                alt={`${getStyleName(character.style)} 스타일 캐릭터`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute top-3 left-3">
                 <Badge className="bg-tech-accent/90 text-white">
-                  {getStyleEmoji(index)} {getStyleName(index)}
+                  {getStyleEmoji(character.style)} {getStyleName(character.style)}
                 </Badge>
               </div>
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -119,7 +121,7 @@ export const CharacterGallery = ({
                   className="flex-1 bg-tech-accent hover:bg-tech-accent/80"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDownload(imageUrl, getStyleName(index));
+                    handleDownload(character.imageUrl, getStyleName(character.style));
                   }}
                 >
                   💾 다운로드
@@ -130,7 +132,7 @@ export const CharacterGallery = ({
                   className="flex-1 border-tech-accent/40 text-tech-accent hover:bg-tech-accent/10"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleShare(imageUrl, getStyleName(index));
+                    handleShare(character.imageUrl, getStyleName(character.style));
                   }}
                 >
                   📤 공유
