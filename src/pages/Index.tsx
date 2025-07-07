@@ -1,7 +1,6 @@
 import { Navigation } from '@/components/Navigation';
 import { HeroSection } from '@/components/HeroSection';
 import { DemoSection } from '@/components/DemoSection';
-import { ResultsSection } from '@/components/ResultsSection';
 import { ProductPreview } from '@/components/ProductPreview';
 import { ProductPreview3D } from '@/components/ProductPreview3D';
 import { ServiceMetrics } from '@/components/ServiceMetrics';
@@ -18,7 +17,6 @@ const Index = () => {
         <HeroSection />
         <ServiceMetrics />
         <DemoSection />
-        <ResultsSection />
         <ProductPreview />
         <ProductPreview3D />
         <CrowdfundingWidget />
