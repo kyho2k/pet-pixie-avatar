@@ -4,6 +4,7 @@ import { CustomImageSection } from './DemoSection/CustomImageSection';
 import { SamplePetsGrid } from './DemoSection/SamplePetsGrid';
 import { GenerationProgress } from './DemoSection/GenerationProgress';
 import { GenerationControls } from './DemoSection/GenerationControls';
+import { ResultsSection } from './ResultsSection';
 import { useGenerateAvatar, useJobStatus } from '@/hooks/useReplicateAPI';
 import { useJobProgress } from '@/hooks/useWebSocket';
 import { useUserQuota } from '@/hooks/useUserQuota';
@@ -179,6 +180,14 @@ export const DemoSection = () => {
             disabled={isGenerating}
           />
         )}
+
+        {/* Results Section */}
+        <ResultsSection
+          meshyModel={meshyModel}
+          cartoonResults={cartoonResults}
+          onRegenerate={handleRegenerate}
+          isRegenerating={isGenerating}
+        />
 
         <div className="text-center mt-12">
           <p className="text-tech-foreground/60 text-sm">
